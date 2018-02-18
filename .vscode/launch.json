@@ -23,7 +23,8 @@
                     "args": "/C start ${auto-detect-url}"
                 },
                 "osx": {
-                    "command": "open"
+                    "command": "open",
+                    "args": "-a \"/Applications/Google Chrome.app\" ${auto-detect-url}"
                 },
                 "linux": {
                     "command": "xdg-open"
