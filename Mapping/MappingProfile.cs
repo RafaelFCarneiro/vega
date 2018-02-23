@@ -13,17 +13,26 @@ namespace vega.Mapping
     {
       // Domain to API Resource
       CreateMap<Make, MakeResource>();
-      CreateMap<Model, ModelResource>();
-      CreateMap<Feature, FeatureResource>();
+      CreateMap<Make, KeyValuePairResource>();
+      CreateMap<Model, KeyValuePairResource>();
+      CreateMap<Feature, KeyValuePairResource>();
       CreateMap<Contact, ContactResource>();
-      CreateMap<Vehicle, VehicleResource>()
+      CreateMap<Vehicle, SaveVehicleResource>()
         .ForMember(vr => vr.Features, opt => { 
             opt.MapFrom(v => v.Features.Select(vf => vf.FeatureId));
         });
+      CreateMap<Vehicle, VehicleResource>()
+        .ForMember(vr => vr.Features, opt => { 
+            opt.MapFrom(v => v.Features.Select(vf => new KeyValuePairResource {
+              Id = vf.Feature.Id,
+              Name = vf.Feature.Name              
+            }));
+        })
+        .ForMember(vr => vr.Make, opt => opt.MapFrom(v => v.Model.Make));
 
       // API Resource to Domain            
       CreateMap<ContactResource, Contact>();
-      CreateMap<VehicleResource, Vehicle>()
+      CreateMap<SaveVehicleResource, Vehicle>()
         .ForMember(v => v.Features, opt => opt.Ignore())
         .ForMember(v => v.Id, opt => opt.Ignore())
         .AfterMap((vr, v) => {          
