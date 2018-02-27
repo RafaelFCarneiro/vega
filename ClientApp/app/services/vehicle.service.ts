@@ -1,5 +1,5 @@
 import { Http } from '@angular/http';
-import { FeaturesService } from './../app/services/features.service';
+import { FeaturesService } from './../services/features.service';
 import { MakeService } from './make.service';
 import { Injectable } from '@angular/core';
 
