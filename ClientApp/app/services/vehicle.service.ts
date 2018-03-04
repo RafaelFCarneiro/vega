@@ -32,7 +32,12 @@ export class VehicleService {
   }
   
   getVehicle(id: number) : Observable<Vehicle> {
-    return this.http.get('api/vehicles/' + id)
+    return this.http.get(`api/vehicles/${id}`)
+      .map(res => res.json());
+  }
+
+  getVehicles() : Observable<Vehicle[]> {
+    return this.http.get('api/vehicles')
       .map(res => res.json());
   }
 
