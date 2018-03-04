@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs/Observable';
+import { Vehicle, SaveVehicle } from './../models/vehicle';
 import { Http } from '@angular/http';
 import { FeaturesService } from './../services/features.service';
 import { MakeService } from './make.service';
@@ -14,12 +16,17 @@ export class VehicleService {
     private featuresService: FeaturesService
   ) { }
 
-  create(vehicle: any) {
+  create(vehicle: SaveVehicle) {
     return this.http.post('/api/vehicles', vehicle)
       .map(res => res.json());
   }
-  
-  getVehicle(id: number) {
+
+  update(vehicle: SaveVehicle) : Observable<Vehicle> {
+    return this.http.put(`/api/vehicles/${vehicle.id}`, vehicle)
+      .map(res => res.json());
+  }
+
+  getVehicle(id: number) : Observable<Vehicle> {
     return this.http.get('api/vehicles/' + id)
       .map(res => res.json());
   }

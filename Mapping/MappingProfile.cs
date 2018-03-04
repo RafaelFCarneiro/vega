@@ -38,14 +38,16 @@ namespace vega.Mapping
         .AfterMap((vr, v) => {          
           // Remove unselected features
           var removeFeatures = v.Features
-            .Where(f => !vr.Features.Contains(f.FeatureId));
+            .Where(f => !vr.Features.Contains(f.FeatureId))
+            .ToList();          
           foreach (var f in removeFeatures)
             v.Features.Remove(f);
           
           // Add new features
           var addedFeatures = vr.Features
             .Where(id => !v.Features.Any(f => f.FeatureId == id))
-            .Select(id => new VehicleFeature { FeatureId = id });          
+            .Select(id => new VehicleFeature { FeatureId = id })
+            .ToList();                    
           foreach (var f in addedFeatures)
             v.Features.Add(f);
         });
