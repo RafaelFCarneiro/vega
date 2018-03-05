@@ -9,8 +9,9 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./vehicle-list.component.css']
 })
 export class VehicleListComponent implements OnInit {
+  // That was used at client filtering context
+  // allVehicles: Vehicle[] = [];
   vehicles: Vehicle[] = [];
-  allVehicles: Vehicle[] = [];
   makes: KeyValuePair[] = [];
   filter: any = {};
 
@@ -19,24 +20,31 @@ export class VehicleListComponent implements OnInit {
   ngOnInit() {
     this.vehicleService.getMakes()
       .subscribe(makes => this.makes = makes);
-    
-    this.vehicleService.getVehicles()
-      .subscribe(vehicles => {
-        this.vehicles = this.allVehicles = vehicles
-      });
+    this.populateVehicles();    
   }
 
   onFilterChange() {
-    let vehicles = this.allVehicles;
-    
-    if (this.filter.makeId)
-      vehicles = vehicles.filter(v => v.make.id == this.filter.makeId);
-    
-    this.vehicles = vehicles;
+    // That was used at client filtering context
+    //
+    // let vehicles = this.allVehicles;    
+    // if (this.filter.makeId)
+    //   vehicles = vehicles.filter(v => v.make.id == this.filter.makeId);
+    // this.vehicles = vehicles;
+    //
+    this.populateVehicles();
   }
 
   resetFilter() {
     this.filter = {};
     this.onFilterChange();
+  }
+
+  private populateVehicles() {
+    this.vehicleService.getVehicles(this.filter)
+      .subscribe(vehicles => {
+        // That was used at client filtering context
+        // this.vehicles = this.allVehicles = vehicles
+        this.vehicles = vehicles
+      });    
   }
 }
