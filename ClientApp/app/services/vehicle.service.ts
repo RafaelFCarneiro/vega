@@ -51,12 +51,11 @@ export class VehicleService {
   }
 
   private toQueryString(obj?: any) {
-    const parts: String[] = [];
-    Object.keys(obj || {}).map(prop => {
+    return Object.keys(obj || {}).map(prop => {
       const value = obj[prop];
-      if (value != null && value != undefined)
-        parts.push(`${encodeURIComponent(prop)}=${encodeURIComponent(value)}`);
-    }); 
-    return parts.join('&');
+      return value != null && value != undefined 
+        ? `${encodeURIComponent(prop)}=${encodeURIComponent(value)}`
+        : '';
+    }).join('&');
   }
 }
