@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using vega.Core;
 using vega.Core.Models;
+using vega.Extensions;
 
 namespace vega.Persistence
 {
@@ -13,6 +14,15 @@ namespace vega.Persistence
   {
     private readonly VegaDbContext context;
     public VehicleRepository(VegaDbContext context) => this.context = context;
+
+    public void Add(Vehicle vehicle)
+    {
+      context.Vehicles.Add(vehicle);
+    }
+    public void Remove(Vehicle vehicle)
+    {
+      context.Remove(vehicle);
+    }
 
     public async Task<Vehicle> GetVehicle(int id, bool includeRelated = true)
     {
@@ -42,29 +52,15 @@ namespace vega.Persistence
       if (queryObj.ModelId.HasValue)
         query = query.Where(v => v.ModelId == queryObj.ModelId.Value);
 
-      var columnsMap = new Dictionary<string, Expression<Func<Vehicle, object>>>(){
+      var columnsMap = new Dictionary<string, Expression<Func<Vehicle, object>>>() 
+      {
         ["make"] = v => v.Model.Make.Name,
-        ["model"] = v => v.Model.Name,  
-        ["contactName"] = v => v.Contact.Name,
-        ["id"] = v => v.Id
+        ["model"] = v => v.Model.Name,   
+        ["contactName"] = v => v.Contact.Name
       };
-
-      if (queryObj.isSortAscending)
-        query = query.OrderBy(columnsMap[queryObj.SortBy]);
-      else
-        query = query.OrderByDescending(columnsMap[queryObj.SortBy]);
+      query = query.ApplyOrdering(queryObj, columnsMap);
             
       return await query.ToListAsync();
     }
-
-    public void Add(Vehicle vehicle)
-    {
-      context.Vehicles.Add(vehicle);
-    }
-    public void Remove(Vehicle vehicle)
-    {
-      context.Remove(vehicle);
-    }
-
   }
 }
