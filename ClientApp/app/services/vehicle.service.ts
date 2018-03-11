@@ -1,10 +1,11 @@
+import { QueryResult } from './../models/query-result';
+import { VehicleQuery } from './../models/vehicle-query';
 import { Observable } from 'rxjs/Observable';
 import { Vehicle, SaveVehicle } from './../models/vehicle';
 import { Http } from '@angular/http';
 import { FeaturesService } from './../services/features.service';
 import { MakeService } from './make.service';
 import { Injectable } from '@angular/core';
-
 import 'rxjs/add/operator/map';
 
 @Injectable()
@@ -37,8 +38,8 @@ export class VehicleService {
       .map(res => res.json());
   }
 
-  getVehicles(filter?: any) : Observable<Vehicle[]> {
-    return this.http.get(`${this.vehiclesEndpoint}?${this.toQueryString(filter)}`)
+  getVehicles(vehicleQuery?: VehicleQuery) : Observable<QueryResult> {
+    return this.http.get(`${this.vehiclesEndpoint}?${this.toQueryString(vehicleQuery)}`)
       .map(res => res.json());
   }
 

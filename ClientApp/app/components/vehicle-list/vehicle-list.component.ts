@@ -1,3 +1,5 @@
+import { QueryResult } from './../../models/query-result';
+import { VehicleQuery } from './../../models/vehicle-query';
 import { KeyValuePair } from "./../../models/key-value-pair";
 import { Vehicle } from "./../../models/vehicle";
 import { VehicleService } from "./../../services/vehicle.service";
@@ -8,12 +10,14 @@ import { Component, OnInit } from "@angular/core";
   templateUrl: "./vehicle-list.component.html",
   styleUrls: ["./vehicle-list.component.css"]
 })
-export class VehicleListComponent implements OnInit {
-  // That was used at client filtering context
-  // allVehicles: Vehicle[] = [];
-  vehicles: Vehicle[] = [];
+export class VehicleListComponent implements OnInit {  
+  private readonly PAGE_SIZE = 3;
+  private readonly QUERY_INIT_VALUES = { page: 1, pageSize: this.PAGE_SIZE };
+  private readonly QUERY_RESULT_INIT_VALUES = { items: [], totalItems: 1 };
+
+  query: VehicleQuery = Object.assign({}, this.QUERY_INIT_VALUES);
+  queryResult: QueryResult = Object.assign({}, this.QUERY_RESULT_INIT_VALUES);
   makes: KeyValuePair[] = [];
-  query: any = {};
   columns: any[] = [
     { title: 'Id' },
     { title: 'Contact Name', key: 'contactName', isSortable: true },
@@ -29,19 +33,13 @@ export class VehicleListComponent implements OnInit {
   }
 
   onFilterChange() {
-    // That was used at client filtering context
-    //
-    // let vehicles = this.allVehicles;
-    // if (this.filter.makeId)
-    //   vehicles = vehicles.filter(v => v.make.id == this.filter.makeId);
-    // this.vehicles = vehicles;
-    //
+    this.query.page = 1;
     this.populateVehicles();
   }
 
   resetFilter() {
-    this.query = {};
-    this.onFilterChange();
+    this.query = Object.assign({}, this.QUERY_INIT_VALUES);
+    this.populateVehicles();
   }
 
   sortBy(columnName: string) {
@@ -54,11 +52,14 @@ export class VehicleListComponent implements OnInit {
     this.populateVehicles();
   }
 
+  onPageChange(page: number) {
+    this.query.page = page;
+    this.populateVehicles();
+  }
+
   private populateVehicles() {
-    this.vehicleService.getVehicles(this.query).subscribe(vehicles => {
-      // That was used at client filtering context
-      // this.vehicles = this.allVehicles = vehicles
-      this.vehicles = vehicles;
+    this.vehicleService.getVehicles(this.query).subscribe(result => {
+      this.queryResult = result;
     });
   }
 }
