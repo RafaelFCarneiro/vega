@@ -1,0 +1,14 @@
+<div class="tab-content" *ngIf="vehicle" >
+  <div role="tabpanel" class="tap-pane active" id="basic">
+    <h2>Basics</h2>
+    <ul>
+      <li>Make: {{ vehicle.make.name }}</li>
+      <li>Make: {{ vehicle.model.name }}</li>
+      <li>Make: {{ vehicle.isRegistered ? 'Yes' : 'No' }}</li>
+    </ul>
+    <h2>Features</h2>
+    <ul>
+      <li *ngFor="let f of vehicle.features">{{ f.name }}</li>
+    </ul>
+  </div>
+</div>
