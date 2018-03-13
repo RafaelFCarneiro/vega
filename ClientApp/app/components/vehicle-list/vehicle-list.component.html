@@ -1,6 +1,6 @@
 <h2>Vehicles</h2>
 <p>
-  <a [routerLink]="['/${route-link}/new']" class="btn btn-primary">New Vehicle</a>
+  <a [routerLink]="['/vehicle/new']" class="btn btn-primary">New Vehicle</a>
 </p>
 <div class="well">
   <div class="form-group">
@@ -37,6 +37,7 @@
       <td> {{ v.make.name }} </td>
       <td> {{ v.model.name }} </td>
       <td> {{ v.contact.name }} </td>
+      <td> <a [routerLink]="['/vehicles/', v.id]">View</a></td>
     </tr>
   </tbody>
 </table>

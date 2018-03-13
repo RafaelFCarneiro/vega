@@ -21,11 +21,7 @@ export class VehicleFormComponent implements OnInit {
     modelId: 0,
     isRegistered: false,
     features: [],
-    contact: {
-      name: '', 
-      phone: '', 
-      email: ''
-    }
+    contact: { name: '',  phone: '',  email: '' }
   };
 
   constructor(
@@ -35,7 +31,7 @@ export class VehicleFormComponent implements OnInit {
     private toastyService: ToastyService
   ) { 
     route.params.subscribe(p => {
-      this.vehicle.id = +p['id'];
+      this.vehicle.id = +p['id'] || 0;
     })
   }
 
@@ -50,20 +46,18 @@ export class VehicleFormComponent implements OnInit {
       sources.push(this.vehicleService.getVehicle(vehicleId));
     
     Observable.forkJoin(sources)
-      .subscribe(data => {
-        this.makes = data[0];
-        this.features = data[1];
-        
-        if (this.vehicle.id) {
-          this.setVehicle(data[2]);
-          this.populateModels();
-        }
-          
-      
-        }, err => {
-        if (err.status == 404)
-          this.router.navigate(['/home']);  
-      });    
+      .subscribe(
+        data => {
+          this.makes = data[0];
+          this.features = data[1];        
+          if (this.vehicle.id) {
+            this.setVehicle(data[2]);
+            this.populateModels();
+          }
+        }, 
+        err => {
+          if (err.status == 404) this.router.navigate(['/home']);
+        });    
   }
 
   private setVehicle(v: Vehicle) {
@@ -96,21 +90,17 @@ export class VehicleFormComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.vehicle.id) {
-      this.vehicleService.update(this.vehicle)
-        .subscribe(x => {
-          this.toastyService.success({
-            title: 'Sucecss',
-            msg: 'The vehicle was sycessufully updated.',
-            theme: 'bootstrap',
-            showClose: true,
-            timeout: 5000
-          })
-        });
-    } else {
-      this.vehicleService.create(this.vehicle)
-      .subscribe(x => console.log(x));
-    }    
+    const result$ = (this.vehicle.id) ? this.vehicleService.update(this.vehicle) : this.vehicleService.create(this.vehicle)
+    result$.subscribe(vehicle => {
+      this.toastyService.success({
+        title: 'Sucecss',
+        msg: 'The vehicle was sycessufully updated.',
+        theme: 'bootstrap',
+        showClose: true,
+        timeout: 5000
+      });
+      this.router.navigate(['/vehicles/', vehicle]);
+    });
   }
 
   onDelete() {
