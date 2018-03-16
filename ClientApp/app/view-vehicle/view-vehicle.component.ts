@@ -1,8 +1,9 @@
+import { ProgressService } from './../services/progress.service';
 import { PhotoService } from './../services/photo.service';
 import { VehicleService } from './../services/vehicle.service';
 import { ToastyService } from 'ng2-toasty';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, NgZone } from '@angular/core';
 
 @Component({
   selector: 'app-view-vehicle',
@@ -15,13 +16,16 @@ export class ViewVehicleComponent implements OnInit {
   vehicle: any;
   vehicleId: number = 0;
   photos: any[];
+  progress: any;
 
   constructor(
+    private zone: NgZone,
     private route: ActivatedRoute,
     private router: Router,
     private toasty: ToastyService,
     private photoService: PhotoService,
-    private vehicleService: VehicleService
+    private vehicleService: VehicleService,
+    private progressService: ProgressService
   ) {
     route.params.subscribe(p => {
       this.vehicleId = +p['id'];
@@ -56,11 +60,27 @@ export class ViewVehicleComponent implements OnInit {
   }
 
   uploadPhoto() {
-    const nativeElement: HTMLInputElement = this.fileInput.nativeElement;
-    if (nativeElement.files)
-      this.photoService.upload(this.vehicleId, nativeElement.files[0])
-        .subscribe(photo => {
-          this.photos.push(photo);
-        });
+    const nativeElement: HTMLInputElement = this.fileInput.nativeElement;    
+    const file = nativeElement.files ? nativeElement.files[0] : null;
+    nativeElement.value = '';  
+    if (file) {      
+      this.progressService.startTracking()
+        .subscribe(
+          progress => this.zone.run(() => this.progress = progress),
+          undefined,
+          () => this.progress = null
+        );
+      this.photoService.upload(this.vehicleId, file)
+        .subscribe(
+          photo => this.photos.push(photo),
+          err => this.toasty.error({
+            title: 'Error',
+            msg: err.text(),
+            theme: 'bootstrap',
+            showClose: true,
+            timeout: 5000
+          })                
+        );
+    }
   }
 }
